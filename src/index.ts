@@ -3,13 +3,14 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import "express-async-errors";
 import errorHandler from "./middlewares/errorHandler";
+import cardRouter from './routers/cardRoutes'
 
 dotenv.config();
 
 const app = express();
 app.use(json());
 app.use(cors());
-// app.use(router)
+app.use(cardRouter)
 app.use(errorHandler);
 
 
