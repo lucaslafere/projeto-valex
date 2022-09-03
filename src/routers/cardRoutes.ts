@@ -3,6 +3,7 @@ import * as cardController from "../controllers/cardController";
 
 const cardRouter = Router();
 
-cardRouter.post("/card", cardController.createCard);
+cardRouter.post("/create-card", cardController.createCard);
+cardRouter.post("/activate-card", cardController.activateCard);
 
 export default cardRouter

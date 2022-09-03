@@ -10,6 +10,7 @@ dotenv.config();
 const cryptr = new Cryptr(`${process.env.CRYPTR_KEY}`);
 dayjs.locale('pt-br')
 
+
 const randomName = faker.name.fullName(); // Rowan Nikolaus
 const randomEmail = faker.internet.email(); // Kassandra.Haley@erich.biz
 
@@ -50,7 +51,8 @@ export async function createCard(
   const securityCodeNoCrypt = faker.finance.creditCardCVV();
   const securityCode = cryptr.encrypt(securityCodeNoCrypt);
 
-  const result = await cardRepository.insert({employeeId, cardholderName, type, number, expirationDate, securityCode, isVirtual: false, isBlocked: false})
+  const result = await cardRepository.insert({employeeId, cardholderName, type, number, expirationDate, securityCode, isVirtual: false, isBlocked: false});
+  return `{securityCode: ${securityCodeNoCrypt}}, {number: ${number}}, {expirationDate: ${expirationDate}}, {cardHolderName: ${cardholderName}}`;
 }
 
 function formatCardName(employeeFullName: string) {
@@ -71,3 +73,35 @@ function formatCardName(employeeFullName: string) {
   const result = finalName.join(" ");
   return result
 }
+
+export async function findByCardDetails (number: string,
+  cardholderName: string,
+  expirationDate: string,
+  securityCode: string) {
+    const splitDate = expirationDate.split("-");
+    const today = dayjs().format('MM-YY');
+    const splitToday = today.split("-")
+    if (splitDate[1] < splitToday[1]){
+      throw {type: 'expired-card', message: 'This card date has expired'}
+    }
+    if (splitDate[1] === splitToday[1]){
+      if(splitDate[0] < splitToday[0]){
+        throw {type: 'expired-card', message: 'This card date has expired'}
+      }
+    }
+    const findCard = await cardRepository.findByCardDetails(number, cardholderName, expirationDate, securityCode);
+    return findCard
+
+    
+
+}
+
+export async function updateCardPassword (
+  id: number) {
+
+    const newPassword = faker.finance.pin();
+    const password = cryptr.encrypt(newPassword);
+    
+    const result = await cardRepository.update(id, {password});
+    return newPassword;
+  }

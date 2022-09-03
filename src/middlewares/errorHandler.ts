@@ -11,5 +11,14 @@ export default function errorHandler (error: any, req: Request, res: Response, n
     if (error.type === 'Existing-Card') {
       return res.status(400).send(error.message);
     }
+    if (error.type === 'wrong-body-format') {
+      return res.status(400).send(error.message);
+    }
+    if (error.type === 'expired-card') {
+      return res.status(400).send(error.message);
+    }
+    if (error.type === 'bad-request') {
+      return res.status(400).send(error.message);
+    }
     res.sendStatus(500);
   }

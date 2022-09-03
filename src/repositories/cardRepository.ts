@@ -1,5 +1,11 @@
 import { connection } from "../config/database";
 import { mapObjectToUpdateQuery } from "../utils/sqlUtils";
+import Cryptr from 'cryptr';
+import dotenv from 'dotenv';
+
+dotenv.config();
+
+const cryptr = new Cryptr(`${process.env.CRYPTR_KEY}`);
 
 export type TransactionTypes =
   | "groceries"
@@ -54,7 +60,8 @@ export async function findByTypeAndEmployeeId(
 export async function findByCardDetails(
   number: string,
   cardholderName: string,
-  expirationDate: string
+  expirationDate: string,
+  securityCode: string
 ) {
   const result = await connection.query<Card, [string, string, string]>(
     ` SELECT 
@@ -63,7 +70,10 @@ export async function findByCardDetails(
       WHERE number=$1 AND "cardholderName"=$2 AND "expirationDate"=$3`,
     [number, cardholderName, expirationDate]
   );
-
+  if (result.rowCount === 0) throw {type: 'Not-Found', message: `Could not find a card that matches the submitted data`}
+  const decryptedString = cryptr.decrypt(result.rows[0].securityCode)
+  if (securityCode !== decryptedString) throw {type: 'wrong-body-format', message: `CVV and Card Number don't match!`}
+  if (result.rows[0].password !== null) throw {type: 'bad-request', message: 'This card has already been activated'}
   return result.rows[0];
 }
 
