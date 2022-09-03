@@ -36,8 +36,8 @@ export async function createCard(
   type: cardRepository.TransactionTypes
 ) {
   const cardFullName = await formatCardName(employeeFullName);
+  const cardholderName = cardFullName.toUpperCase();
   const number = faker.random.numeric(16);
-
 
   // const result = await cardRepository.insert({employeeId, cardholderName, type, number})
 }
