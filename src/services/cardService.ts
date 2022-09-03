@@ -1,6 +1,14 @@
 import * as cardRepository from "../repositories/cardRepository";
 import * as employeeRepository from "../repositories/employeeRepository";
 import { faker } from "@faker-js/faker";
+import dayjs from 'dayjs'
+import Cryptr from 'cryptr';
+import dotenv from 'dotenv';
+
+dotenv.config();
+
+const cryptr = new Cryptr(`${process.env.CRYPTR_KEY}`);
+dayjs.locale('pt-br')
 
 const randomName = faker.name.fullName(); // Rowan Nikolaus
 const randomEmail = faker.internet.email(); // Kassandra.Haley@erich.biz
@@ -37,9 +45,12 @@ export async function createCard(
 ) {
   const cardFullName = await formatCardName(employeeFullName);
   const cardholderName = cardFullName.toUpperCase();
-  const number = faker.random.numeric(16);
+  const number = faker.finance.creditCardNumber('####-####-####-####');
+  const expirationDate = dayjs().add(5, 'year').format('MM-YY')
+  const securityCodeNoCrypt = faker.finance.creditCardCVV();
+  const securityCode = cryptr.encrypt(securityCodeNoCrypt);
 
-  // const result = await cardRepository.insert({employeeId, cardholderName, type, number})
+  const result = await cardRepository.insert({employeeId, cardholderName, type, number, expirationDate, securityCode, isVirtual: false, isBlocked: false})
 }
 
 function formatCardName(employeeFullName: string) {
