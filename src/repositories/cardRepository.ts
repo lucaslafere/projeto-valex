@@ -41,6 +41,7 @@ export async function findById(id: number) {
     "SELECT * FROM cards WHERE id=$1",
     [id]
   );
+  if (result.rowCount === 0) throw {type: 'Not-Found', message: `Could not find a card that matches the submitted data`}
 
   return result.rows[0];
 }
@@ -73,7 +74,6 @@ export async function findByCardDetails(
   if (result.rowCount === 0) throw {type: 'Not-Found', message: `Could not find a card that matches the submitted data`}
   const decryptedString = cryptr.decrypt(result.rows[0].securityCode)
   if (securityCode !== decryptedString) throw {type: 'wrong-body-format', message: `CVV and Card Number don't match!`}
-  if (result.rows[0].password !== null) throw {type: 'bad-request', message: 'This card has already been activated'}
   return result.rows[0];
 }
 
