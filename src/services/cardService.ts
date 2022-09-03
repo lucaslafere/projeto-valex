@@ -1,9 +1,13 @@
 import * as cardRepository from "../repositories/cardRepository";
 import * as employeeRepository from "../repositories/employeeRepository";
+import * as rechargeRepository from '../repositories/rechargeRepository';
+import * as paymentRepository from '../repositories/paymentRepository';
+import * as businessRepository from '../repositories/businessRepository';
 import { faker } from "@faker-js/faker";
 import dayjs from "dayjs";
 import Cryptr from "cryptr";
 import dotenv from "dotenv";
+import { connection } from "../config/database";
 
 dotenv.config();
 
@@ -109,7 +113,7 @@ export async function updateCardPassword(id: number) {
 export async function findById(id: number) {
   const result = await cardRepository.findById(id);
 
-  return { password: result.password, expirationDate: result.expirationDate, isBlocked: result.isBlocked };
+  return { password: result.password, expirationDate: result.expirationDate, isBlocked: result.isBlocked, type: result.type };
 }
 
 export async function checkExpiredDate(expirationDate: string) {
@@ -134,4 +138,37 @@ export async function checkBlockedCard (isBlocked: boolean) {
 export async function toggleBlockCard(id: number, isBlocked: boolean) {
   const result = await cardRepository.update(id, {isBlocked})
 
+}
+export async function rechargeCard (cardId: number, amount: number){
+  if (amount <= 0)
+  throw {
+    type: "wrong-body-format",
+    message: "Amount must be > 0",
+  };
+  const result = await rechargeRepository.insert({cardId, amount});
+  return result
+}
+
+export async function payment (cardId: number, businessId: number, amount: number) {
+  if (amount <= 0)
+  throw {
+    type: "wrong-body-format",
+    message: "Amount must be > 0",
+  };
+  const result = await paymentRepository.insert({cardId, businessId, amount});
+  return result
+}
+
+export async function findBusinessById(id: number) {
+  const result = await businessRepository.findById(id)
+  return result
+}
+
+export async function checkCardPositiveBalance(id: number){
+  const result = await rechargeRepository.findByCardId(id);
+  return result;
+}
+export async function checkCardNegativeBalance(id: number) {
+  const result = await paymentRepository.findByCardId(id);
+  return result;
 }

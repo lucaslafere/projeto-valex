@@ -20,5 +20,8 @@ export default function errorHandler (error: any, req: Request, res: Response, n
     if (error.type === 'bad-request') {
       return res.status(400).send(error.message);
     }
+    if (error.type === 'no-money') {
+      return res.status(400).send(error.message);
+    }
     res.sendStatus(500);
   }
