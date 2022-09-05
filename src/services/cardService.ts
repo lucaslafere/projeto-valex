@@ -1,21 +1,14 @@
 import * as cardRepository from "../repositories/cardRepository";
 import * as employeeRepository from "../repositories/employeeRepository";
-import * as rechargeRepository from '../repositories/rechargeRepository';
-import * as paymentRepository from '../repositories/paymentRepository';
-import * as businessRepository from '../repositories/businessRepository';
 import { faker } from "@faker-js/faker";
 import dayjs from "dayjs";
 import Cryptr from "cryptr";
 import dotenv from "dotenv";
-import { connection } from "../config/database";
 
 dotenv.config();
 
 const cryptr = new Cryptr(`${process.env.CRYPTR_KEY}`);
 dayjs.locale("pt-br");
-
-const randomName = faker.name.fullName(); // Rowan Nikolaus
-const randomEmail = faker.internet.email(); // Kassandra.Haley@erich.biz
 
 export async function validateCardData(
   employeeId: number,
@@ -139,36 +132,5 @@ export async function toggleBlockCard(id: number, isBlocked: boolean) {
   const result = await cardRepository.update(id, {isBlocked})
 
 }
-export async function rechargeCard (cardId: number, amount: number){
-  if (amount <= 0)
-  throw {
-    type: "wrong-body-format",
-    message: "Amount must be > 0",
-  };
-  const result = await rechargeRepository.insert({cardId, amount});
-  return result
-}
 
-export async function payment (cardId: number, businessId: number, amount: number) {
-  if (amount <= 0)
-  throw {
-    type: "wrong-body-format",
-    message: "Amount must be > 0",
-  };
-  const result = await paymentRepository.insert({cardId, businessId, amount});
-  return result
-}
 
-export async function findBusinessById(id: number) {
-  const result = await businessRepository.findById(id)
-  return result
-}
-
-export async function checkCardPositiveBalance(id: number){
-  const result = await rechargeRepository.findByCardId(id);
-  return result;
-}
-export async function checkCardNegativeBalance(id: number) {
-  const result = await paymentRepository.findByCardId(id);
-  return result;
-}

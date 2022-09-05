@@ -7,8 +7,6 @@ cardRouter.post("/create-card", cardController.createCard);
 cardRouter.post("/activate-card", cardController.activateCard);
 cardRouter.post('/block-card', cardController.blockCard);
 cardRouter.post('/unblock-card', cardController.unblockCard)
-cardRouter.post('/recharge-card', cardController.rechargeCard)
-cardRouter.post('/payment', cardController.payment)
-cardRouter.post('/balance', cardController.checkBalance)
+cardRouter.post('/balance', cardController.checkCardBalance)
 
 export default cardRouter
