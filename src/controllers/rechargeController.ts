@@ -9,6 +9,8 @@ export async function rechargeCard (req: Request, res: Response) {
       await companyService.validateApiKey(API_KEY);
     const id = Number(req.body.cardId);
     const amount = Number(req.body.amount);
+    if (isNaN(id)) throw {type: "wrong-body-format", message: `Body 'id' property contains non-numeric digits`};
+    if (isNaN(amount)) throw {type: "wrong-body-format", message: `Body 'amount' property contains non-numeric digits`};
     if (!req.body.cardId)
     throw { type: "wrong-body-format", message: "Body is missing cardId property" };
   if (!req.body.amount)

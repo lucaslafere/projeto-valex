@@ -11,6 +11,9 @@ export async function payment (req: Request, res: Response) {
     const paymentPassword = req.body.password;
     const businessId = Number(req.body.businessId);
     const amount = Number(req.body.amount);
+    if (isNaN(amount)) throw {type: "wrong-body-format", message: `Body 'amount' property contains non-numeric digits`};
+    if (isNaN(businessId)) throw {type: "wrong-body-format", message: `Body 'businessId' property contains non-numeric digits`};
+    if (isNaN(cardId)) throw {type: "wrong-body-format", message: `Body 'cardId' property contains non-numeric digits`};
     if (!req.body.cardId)
     throw { type: "wrong-body-format", message: "Body is missing cardId property" };
   if (!req.body.amount)

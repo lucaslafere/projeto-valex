@@ -24,6 +24,7 @@ export async function createCard(req: Request, res: Response) {
     };
   const id = Number(employeeId);
 
+  if (isNaN(id)) throw {type: "wrong-body-format", message: `Body 'id' property contains non-numeric digits`};
   if (
     type === "groceries" ||
     type === "restaurant" ||
@@ -74,6 +75,7 @@ export async function activateCard(req: Request, res: Response) {
     securityCode
   );
   const id = Number(findCard.id);
+  if (isNaN(id)) throw {type: "wrong-body-format", message: `Body 'id' property contains non-numeric digits`};
   if (findCard.password !== null)
     throw {
       type: "bad-request",
@@ -92,6 +94,7 @@ export async function activateCard(req: Request, res: Response) {
 export async function blockCard(req: Request, res: Response) {
   const { password } = req.body;
   const id = Number(req.body.id);
+  if (isNaN(id)) throw {type: "wrong-body-format", message: `Body 'id' property contains non-numeric digits`};
   if (!req.body.id)
     throw { type: "wrong-body-format", message: "Body is missing id property" };
   if (!req.body.password)
@@ -119,6 +122,7 @@ export async function blockCard(req: Request, res: Response) {
 export async function unblockCard (req: Request, res: Response) {
   const { password } = req.body;
   const id = Number(req.body.id);
+  if (isNaN(id)) throw {type: "wrong-body-format", message: `Body 'id' property contains non-numeric digits`};
   if (!req.body.id)
     throw { type: "wrong-body-format", message: "Body is missing id property" };
   if (!req.body.password)
@@ -146,7 +150,9 @@ export async function unblockCard (req: Request, res: Response) {
 export async function checkCardBalance(req: Request, res: Response){
   const cardId = Number(req.body.cardId);
   if (!req.body.cardId)
+  
   throw { type: "wrong-body-format", message: "Body is missing cardId property" };
+  if (isNaN(cardId)) throw {type: "wrong-body-format", message: `Body 'cardId' property contains non-numeric digits`};
   await cardService.findById(cardId);
   const checkCardPositiveBalance = await rechargeService.checkCardPositiveBalance(cardId);
 
